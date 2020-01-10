@@ -3,6 +3,6 @@ server.port: 12345
 logging:
   level:
     root: warn
-    com.qgs: info
+    com.jige: info
   file:
     path: /var/my_logs

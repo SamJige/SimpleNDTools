@@ -1,6 +1,8 @@
 package com.jige;
 
+import com.jige.service.ReadDateService;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,11 +14,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication(scanBasePackages = "com")
 @EnableAsync
 public class JigeApplication {
+    @Autowired
+    ReadDateService readDateService;
 
     //启动以后自动关闭 不需要修改
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(JigeApplication.class, args);
-        SpringApplication.exit(ctx, () -> 0);
+//        SpringApplication.exit(ctx, () -> 0);
     }
 
     /**
@@ -27,6 +31,7 @@ public class JigeApplication {
     @EventListener
     public void startup(ContextRefreshedEvent event) {
         LoggerFactory.getLogger(getClass()).info("启动...");
+        readDateService.waitForData();
     }
 
     /**
