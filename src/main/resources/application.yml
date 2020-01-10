@@ -1,0 +1,8 @@
+server.port: 12345
+
+logging:
+  level:
+    root: warn
+    com.qgs: info
+  file:
+    path: /var/my_logs
