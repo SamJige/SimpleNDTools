@@ -8,9 +8,9 @@
         <version>2.2.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.qgs</groupId>
+    <groupId>com.jige</groupId>
     <artifactId>SimpleNDTools</artifactId>
-    <version>1.0</version>
+    <version>0.0.1</version>
     <name>SimpleNDTools</name>
     <description>SimpleNDTools</description>
 

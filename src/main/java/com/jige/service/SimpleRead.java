@@ -7,15 +7,15 @@ import purejavacomm.SerialPortEvent;
 import purejavacomm.SerialPortEventListener;
 
 import java.io.InputStream;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class SimpleRead implements SerialPortEventListener {
     CommPortIdentifier portId;
     InputStream inputStream;
     SerialPort serialPort;
-    Consumer<byte[]> readData;
+    BiConsumer<Integer, byte[]> readData;
 
-    public SimpleRead(CommPortIdentifier portId, Consumer<byte[]> readData) {
+    public SimpleRead(CommPortIdentifier portId, BiConsumer<Integer, byte[]> readData) {
         try {
             this.portId = portId;
             this.readData = readData;
@@ -34,7 +34,6 @@ public class SimpleRead implements SerialPortEventListener {
     }
 
     public void serialEvent(SerialPortEvent event) {
-        LoggerFactory.getLogger(getClass()).info("event got ");
         switch (event.getEventType()) {
             case SerialPortEvent.BI:
             case SerialPortEvent.OE:
@@ -47,12 +46,13 @@ public class SimpleRead implements SerialPortEventListener {
             case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
                 break;
             case SerialPortEvent.DATA_AVAILABLE:
-                byte[] readBuffer = new byte[169];
+                byte[] readBuffer = new byte[256];
+                int numBytes = 0;
                 try {
                     while (inputStream.available() > 0) {
-                        int numBytes = inputStream.read(readBuffer);
+                        numBytes = inputStream.read(readBuffer);
                     }
-                    readData.accept(readBuffer);
+                    readData.accept(numBytes, readBuffer);
                 } catch (Exception e) {
                     LoggerFactory.getLogger(getClass()).error("error ->", e);
                 }
