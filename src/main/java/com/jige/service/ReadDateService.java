@@ -46,26 +46,36 @@ public class ReadDateService {
             }
             //前两个是 0xaa 第三个是长度
             pLength = Byte.toUnsignedInt(thisByte);
+
             checkSum = Byte.toUnsignedInt(packet[i + pLength + 1]);
-            LoggerFactory.getLogger(getClass()).info("length:{} checksum :{}", pLength, checkSum);
+//            LoggerFactory.getLogger(getClass()).info("length:{} checksum :{}", pLength, checkSum);
             if (pLength == 0) {
-                return;
+                continue;
             }
             List<Byte> dataPayload = new ArrayList<>(pLength);
-            for (int j = i + 1; j < i + pLength; j++) {
+            for (int j = i + 1; j <= i + pLength; j++) {
                 dataPayload.add(packet[j]);
             }
             if (!isGoodCheckSum(dataPayload, checkSum)) {
-                LoggerFactory.getLogger(getClass()).info("bad checksum");
-                return;
+                // read data
+                continue;
             }
             LoggerFactory.getLogger(getClass()).info("data size -> {}", dataPayload.size());
+            i += pLength;
         }
     }
 
-    boolean isGoodCheckSum(List<Byte> payload, int checkSum) {
-        int sum = payload.stream().mapToInt(Byte::toUnsignedInt).sum() & 0xff;
-        if (sum != checkSum) {
+    /**
+     * The Payload's Checksum is defined as:
+     * 1. summing all the bytes of the Packet's Data Payload
+     * 2. taking the lowest 8 bits of the sum
+     * 3. performing the bit inverse (one's compliment inverse) on those lowest 8 bits
+     */
+    public boolean isGoodCheckSum(List<Byte> payload, int checkSum) {
+        int sum = payload.stream().mapToInt(Byte::toUnsignedInt).sum();
+        int a = (~(sum & 0xff)) & 0xff;
+
+        if (a != checkSum) {
             LoggerFactory.getLogger(getClass()).info("bad checksum sum:{} checkSum:{}", sum, checkSum);
             return false;
         }

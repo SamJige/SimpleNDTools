@@ -50,7 +50,7 @@ public class SimpleRead implements SerialPortEventListener {
                 int numBytes = 0;
                 try {
                     while (inputStream.available() > 0) {
-                        numBytes = inputStream.read(readBuffer);
+                        numBytes += inputStream.read(readBuffer);
                     }
                     readData.accept(numBytes, readBuffer);
                 } catch (Exception e) {
